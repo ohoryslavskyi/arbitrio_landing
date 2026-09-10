@@ -1,0 +1,307 @@
+/* ==========================================================================
+   Arbitrio — глобальна основа
+   Тут живе тільки те, що не може бути локальним: шрифти, токени, ресети,
+   keyframes і класи, спільні для кількох секцій.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400..700&display=swap');
+
+:root {
+  /* поверхні */
+  --bg: #05070c;
+  --bg-alt: #070c13;
+  --surface: #0a0f16;
+  --surface-hi: #0c1420;
+  --surface-inset: #080d14;
+  --surface-dark: #04080e;
+  --row-hover: #101a28;
+
+  /* синій */
+  --blue: #2f8cff;
+  --blue-hi: #6aa8ff;
+  --blue-text: #8fbcff;
+  --cyan: #7fd4ff;
+  --blue-deep: #1560d4;
+  --on-blue: #041020;
+
+  /* текст */
+  --ink: #f2f6fb;
+  --ink-2: #c7d3e2;
+  --ink-3: #a6b4c6;
+  --ink-4: #91a0b3;
+  --ink-5: #8996a8;
+  --ink-muted: #5a6675;
+  --ink-caption: #6f8bb5;
+  --ink-panel: #8ea9c9;
+
+  /* теплий акцент — тільки штрафи */
+  --warm: #e8735f;
+  --warm-ink: #c98a7c;
+
+  /* лінії */
+  --hairline: rgba(255, 255, 255, .07);
+  --divider: rgba(255, 255, 255, .06);
+  --blue-line: rgba(47, 140, 255, .3);
+
+  /* рух */
+  --ease: cubic-bezier(.2, .7, .3, 1);
+
+  /* сітка */
+  --wrap: 1240px;
+  --pad: 30px;
+
+  /* шрифти */
+  --font: 'Geist', system-ui, -apple-system, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  background: var(--bg);
+  scroll-behavior: smooth;
+  scroll-padding-top: 32px;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: #e6ecf2;
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  text-wrap: pretty;
+}
+
+a { color: var(--blue); text-decoration: none; }
+a:hover { color: var(--blue-text); }
+::selection { background: rgba(47, 140, 255, .28); }
+
+h1, h2, h3, p { margin: 0; }
+
+/* --------------------------------------------------------------------------
+   Каркас секцій
+   -------------------------------------------------------------------------- */
+
+.wrap {
+  max-width: var(--wrap);
+  margin: 0 auto;
+  padding: 56px var(--pad);
+}
+
+.section-title {
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -.03em;
+  color: var(--ink);
+}
+
+.section-lead {
+  font-size: clamp(1.05rem, 1.7vw, 1.3rem);
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  color: var(--blue-text);
+}
+
+.body-text {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--ink-3);
+}
+
+/* мітка з лівою рискою */
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--blue);
+  border-left: 2px solid var(--blue);
+  padding-left: 8px;
+}
+
+/* мітка в рамці */
+.pill {
+  display: inline-block;
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--blue-text);
+  border: 1px solid rgba(47, 140, 255, .34);
+  border-radius: 6px;
+  padding: 5px 9px;
+}
+
+.pill--muted {
+  color: var(--ink-5);
+  border-color: rgba(255, 255, 255, .1);
+}
+
+/* --------------------------------------------------------------------------
+   Кнопки
+   -------------------------------------------------------------------------- */
+
+.btn {
+  display: inline-block;
+  padding: 14px 24px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background .18s, border-color .18s, color .18s;
+}
+
+.btn--primary { background: var(--blue); color: var(--on-blue); }
+.btn--primary:hover { background: var(--blue-hi); color: var(--on-blue); }
+
+.btn--ghost {
+  background: #0b1017;
+  border: 1px solid rgba(255, 255, 255, .12);
+  color: #e6ecf2;
+  font-weight: 500;
+}
+.btn--ghost:hover { border-color: rgba(47, 140, 255, .45); color: var(--ink); }
+
+/* --------------------------------------------------------------------------
+   Картки та їх hover-стани
+   Три патерни на всю сторінку — більше ніде не вигадувати.
+   -------------------------------------------------------------------------- */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+}
+
+/* 1. підйом + масштаб — показники, сценарії, платформа, кроки навчання */
+.card--lift {
+  transition: transform .3s var(--ease), border-color .3s, background .3s, box-shadow .3s;
+}
+.card--lift:hover {
+  transform: translateY(-6px) scale(1.03);
+  border-color: rgba(47, 140, 255, .5);
+  background: var(--surface-hi);
+  box-shadow: 0 22px 44px -22px rgba(47, 140, 255, .55);
+}
+
+/* 2. підйом без масштабу — тарифи */
+.card--raise {
+  transition: transform .3s var(--ease), border-color .3s, box-shadow .3s;
+}
+.card--raise:hover {
+  transform: translateY(-5px);
+  border-color: rgba(47, 140, 255, .6);
+  box-shadow: 0 22px 44px -24px rgba(47, 140, 255, .5);
+}
+
+/* 3. тільки рамка й тінь — обгортки з інтерактивними рядками всередині */
+.card--glow {
+  transition: border-color .3s, box-shadow .3s;
+}
+.card--glow:hover {
+  border-color: rgba(47, 140, 255, .42);
+  box-shadow: 0 22px 44px -26px rgba(47, 140, 255, .42);
+}
+
+/* акцентні поверхні */
+.card--blue {
+  background: linear-gradient(180deg, rgba(47, 140, 255, .07), rgba(47, 140, 255, .015));
+  border-color: var(--blue-line);
+}
+
+.card--warm {
+  background: linear-gradient(180deg, rgba(232, 115, 95, .1), rgba(232, 115, 95, .02));
+  border-color: rgba(232, 115, 95, .32);
+}
+.card--warm.card--raise:hover {
+  border-color: rgba(232, 115, 95, .6);
+  box-shadow: 0 22px 44px -24px rgba(232, 115, 95, .5);
+}
+
+/* рядок списку: фон + зсув на 4px */
+.row-hover {
+  cursor: default;
+  transition: background .22s, padding-left .22s;
+}
+
+/* пункт списку у власній плашці */
+.chip-hover {
+  padding: 7px 11px;
+  margin: -7px -11px;
+  border-radius: 8px;
+  cursor: default;
+  transition: background .22s, color .22s;
+}
+.chip-hover:hover {
+  background: var(--row-hover);
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   Анімації
+   -------------------------------------------------------------------------- */
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(47, 140, 255, .45); }
+  50% { opacity: .55; box-shadow: 0 0 0 5px rgba(47, 140, 255, 0); }
+}
+
+@keyframes flameDance {
+  0%, 100% { transform: scale(1) rotate(-4deg) translateY(0); }
+  20% { transform: scale(1.16) rotate(4deg) translateY(-2px); }
+  45% { transform: scale(.92) rotate(-2.5deg) translateY(1px); }
+  70% { transform: scale(1.11) rotate(3deg) translateY(-1.5px); }
+}
+
+@keyframes sheen {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(220%); }
+}
+
+/* точка «живого» стану */
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--blue);
+  animation: dotPulse 2.4s ease-in-out infinite;
+}
+
+/* полум'я: постійно коливається, на hover картки розжарюється */
+.flame {
+  display: inline-block;
+  font-size: .82em;
+  transform-origin: 50% 88%;
+  animation: flameDance 1.25s ease-in-out infinite;
+  filter: drop-shadow(0 0 9px rgba(255, 122, 24, .45)) saturate(1.25) hue-rotate(-6deg);
+  transition: filter .3s;
+}
+.flame:hover,
+.stat:hover .flame {
+  filter: drop-shadow(0 0 18px rgba(255, 140, 30, .85)) saturate(2) hue-rotate(-16deg) brightness(1.14);
+}
+
+/* квадрат інтерактивної сітки — стилі в спокої;
+   решту (transform/background/box-shadow) пише usePointerGrid */
+.cell {
+  display: block;
+  width: 62px;
+  height: 62px;
+  border-radius: 5px;
+  background: rgba(47, 140, 255, .05);
+  box-shadow: inset 0 0 0 1px rgba(143, 188, 255, .09);
+  transition: transform .35s var(--ease), background .35s, box-shadow .35s;
+}
+
+/* --------------------------------------------------------------------------
+   Повага до prefers-reduced-motion
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .flame, .pulse-dot { animation: none; }
+  .card--lift:hover, .card--raise:hover { transform: none; }
+}
