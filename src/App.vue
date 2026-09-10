@@ -13,14 +13,17 @@
       <TeamSection />
       <StatsBar />
       <MissionSection />
-      <PlatformSection />
-      <LearningSection />
       <PartnerSection />
       <PricingSection />
+      <PlatformSection />
+      <LearningSection />
       <CtaSection />
       <SiteFooter />
     </main>
   </div>
+
+  <!-- Поза .page: у .page є overflow: hidden, а рейці потрібен чистий fixed -->
+  <SideNav />
 </template>
 
 <script setup>
@@ -28,12 +31,13 @@ import HeroSection from './components/HeroSection.vue';
 import TeamSection from './components/TeamSection.vue';
 import StatsBar from './components/StatsBar.vue';
 import MissionSection from './components/MissionSection.vue';
-import PlatformSection from './components/PlatformSection.vue';
-import LearningSection from './components/LearningSection.vue';
 import PartnerSection from './components/PartnerSection.vue';
 import PricingSection from './components/PricingSection.vue';
+import PlatformSection from './components/PlatformSection.vue';
+import LearningSection from './components/LearningSection.vue';
 import CtaSection from './components/CtaSection.vue';
 import SiteFooter from './components/SiteFooter.vue';
+import SideNav from './components/SideNav.vue';
 import { usePointerGrid } from './composables/usePointerGrid.js';
 
 const { gridEl, cellCount } = usePointerGrid();

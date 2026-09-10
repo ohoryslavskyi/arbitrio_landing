@@ -88,10 +88,22 @@ export const stats = [
   { value: '24/7', caption: 'ринок не зупиняється — система теж' },
 ];
 
-export const footerLinks = [
-  { href: '#platform', label: 'Платформа' },
-  { href: '#team', label: 'Команда' },
-  { href: '#mission', label: 'Місія' },
-  { href: '#demo', label: 'Демо-режим' },
-  { href: '#pricing', label: 'Тарифи' },
+/**
+ * Єдине джерело назв розділів: звідси збирається і права навігація при скролі,
+ * і меню у футері. Міняти підпис треба тільки тут — розʼїхатись вони не можуть.
+ *
+ * `id` — це id секції в розмітці, порядок збігається з порядком в App.vue.
+ */
+export const sections = [
+  { id: 'team', label: 'Команда' },
+  { id: 'mission', label: 'Місія' },
+  { id: 'levels', label: 'Партнерам' },
+  { id: 'pricing', label: 'Тарифи' },
+  { id: 'platform', label: 'Платформа' },
+  { id: 'demo', label: 'Навчання' },
+  { id: 'cta', label: 'Доступ' },
 ];
+
+export const sideNavItems = sections;
+
+export const footerLinks = sections.map(({ id, label }) => ({ href: `#${id}`, label }));

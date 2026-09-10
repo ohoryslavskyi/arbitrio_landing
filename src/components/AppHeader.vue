@@ -1,11 +1,7 @@
 <template>
   <header class="bar">
-    <a href="/" class="brand">
-      <BrandMark />
-      <span class="brand-text">
-        <span class="brand-name">Arbitrio</span>
-        <span class="brand-tag">Arbitrage control center</span>
-      </span>
+    <a href="/" class="brand-link">
+      <BrandLockup />
     </a>
 
     <span class="divider" aria-hidden="true"></span>
@@ -64,7 +60,7 @@
 </template>
 
 <script setup>
-import BrandMark from './BrandMark.vue';
+import BrandLockup from './BrandLockup.vue';
 import { useTheme } from '../composables/useTheme.js';
 import { computed } from 'vue';
 
@@ -102,43 +98,8 @@ const themeLabel = computed(() =>
   border-bottom: 1px solid var(--hairline);
 }
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  flex: none;
-}
-
-.brand-text {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-/* Градієнт прив'язаний до пікселів, а не до відсотків: інакше він
-   розтягується під розмір елемента й на різних кеглях виглядає інакше. */
-.brand-name {
-  font-family: var(--mono);
-  font-size: 19px;
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -.045em;
-  background-image: linear-gradient(96deg, #f2f6fb 0px, #7fd4ff 104px);
-  background-size: 104px 100%;
-  background-repeat: no-repeat;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.brand-tag {
-  font-family: var(--mono);
-  font-size: 8px;
-  line-height: 1;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-}
+/* Сам локап живе в BrandLockup.vue — тут лише його місце в рядку */
+.brand-link { flex: none; }
 
 .divider {
   flex: none;
@@ -288,10 +249,6 @@ const themeLabel = computed(() =>
   background: #f5f7fa;
   border-bottom-color: rgba(10, 15, 22, .1);
 }
-:global([data-theme='light']) .brand-name {
-  background-image: linear-gradient(96deg, #0a0f16 0px, #1560d4 104px);
-}
-:global([data-theme='light']) .brand-tag { color: #6b7787; }
 :global([data-theme='light']) .divider { background: rgba(10, 15, 22, .12); }
 :global([data-theme='light']) .link { color: #55616f; }
 :global([data-theme='light']) .link:hover { color: #0a0f16; background: rgba(10, 15, 22, .05); }
@@ -316,7 +273,8 @@ const themeLabel = computed(() =>
 
 @media (max-width: 900px) {
   .bar { gap: 10px 12px; }
-  .brand-tag { display: none; }
+  /* :deep — підпис живе всередині BrandLockup, у тісній шапці він зайвий */
+  .brand-link :deep(.brand-tag) { display: none; }
   .nav { order: 3; width: 100%; overflow-x: auto; scrollbar-width: none; }
   .nav::-webkit-scrollbar { height: 0; }
   .spacer { display: none; }

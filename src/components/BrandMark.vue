@@ -19,9 +19,16 @@
         </linearGradient>
       </defs>
 
-      <path class="leg-l" d="M9 41 L22.2 11" :stroke="`url(#${idL})`" stroke-width="5" stroke-linecap="round" />
-      <path class="leg-r" d="M25.8 11 L39 41" :stroke="`url(#${idR})`" stroke-width="5" stroke-linecap="round" />
-      <path class="leg-b" d="M16.4 30.6 L31.6 30.6" stroke="#4B9DFF" stroke-width="3.6" stroke-linecap="round" />
+      <!--
+        Кругла заглушка додає по 2.5 понад крайні точки, тому реальні межі знака —
+        від y 8.5 до y 43.5, а це центр 26 при центрі viewBox 24. Зсув на -2
+        ставить літеру рівно посередині плитки.
+      -->
+      <g transform="translate(0 -2)">
+        <path class="leg-l" d="M9 41 L22.2 11" :stroke="`url(#${idL})`" stroke-width="5" stroke-linecap="round" />
+        <path class="leg-r" d="M25.8 11 L39 41" :stroke="`url(#${idR})`" stroke-width="5" stroke-linecap="round" />
+        <path class="leg-b" d="M16.4 30.6 L31.6 30.6" stroke="#4B9DFF" stroke-width="3.6" stroke-linecap="round" />
+      </g>
     </svg>
   </span>
 </template>

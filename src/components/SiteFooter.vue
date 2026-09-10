@@ -1,9 +1,9 @@
 <template>
   <footer class="footer">
     <div class="footer-inner">
-      <span class="footer-brand">
-        Arbitr<span class="footer-brand-dot">.IO</span> — автоматизований криптовалютний арбітраж
-      </span>
+      <a href="#top" class="footer-brand" aria-label="Arbitrio — на початок сторінки">
+        <BrandLockup />
+      </a>
 
       <nav class="footer-nav">
         <a v-for="link in footerLinks" :key="link.href" :href="link.href" class="footer-link">
@@ -15,6 +15,7 @@
 </template>
 
 <script setup>
+import BrandLockup from './BrandLockup.vue';
 import { footerLinks } from '../data/content.js';
 </script>
 
@@ -27,18 +28,12 @@ import { footerLinks } from '../data/content.js';
   padding: 26px var(--pad);
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 18px 24px;
   align-items: center;
   justify-content: space-between;
 }
 
-.footer-brand {
-  font-family: var(--mono);
-  font-size: 13px;
-  color: var(--ink-muted);
-}
-
-.footer-brand-dot { color: var(--blue); }
+.footer-brand { flex: none; }
 
 .footer-nav {
   display: flex;
