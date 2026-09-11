@@ -23,6 +23,14 @@ GitHub Actions (.github/workflows/deploy.yml)
     root * /srv/current
 ```
 
+**Чому окремий контейнер, а не файли всередині вхідних дверей.** Двері — це форма
+входу з найвужчим CSP і без жодного скрипта; тут навпаки — бандл на 90 КБ. В одному
+процесі політику довелося б послабити саме на тій сторінці, куди вводять пароль.
+
+**Кеш.** `assets/*` мають хеш у назві й віддаються `immutable` на рік; `index.html` —
+`no-cache`, бо саме він називає імена нових бандлів. Закешований індекс після деплою
+просив би файли, яких уже немає.
+
 Ключове рішення: **контейнер не перезбирається**. Деплой — це покласти каталог на диск
 і перемкнути симлінк. Caddy розв'язує `current` на кожен запит, тож нова збірка стає
 живою в мить `rename(2)`, без даунтайму й без `docker build` на проді.
@@ -72,8 +80,12 @@ rm ~/.ssh/arbitrio_landing_deploy             # локальна копія бі
 2. Змержити цю гілку в `main`. Пайплайн покладе збірку в
    `/srv/arbitrio-landing/releases/<sha>` і `Caddyfile` поруч. Сторінку в цей момент
    **ще віддає старий образ** із монорепи — нове просто лежить на диску й чекає.
-3. Зробити міграцію монорепи (нижче) і змержити її. `docker compose up -d` перестворить
-   контейнер уже з монтуванням `/srv/arbitrio-landing` — і сторінка стане новою.
+3. Змержити гілку `ci/landing-to-srv` у монорепі ArbBot (готова, деталі нижче).
+   `docker compose up -d` перестворить контейнер уже з монтуванням
+   `/srv/arbitrio-landing` — і сторінка стане новою.
+
+🔴 Саме в цьому порядку. Навпаки не вийде: пре-фліт монорепи впаде з названою
+причиною, бо `/srv/arbitrio-landing/Caddyfile` ще не існує.
 
 ⚠️ Димова перевірка на кроці 2 пройде, але доведе мало: вона стукає в публічний URL, а
 той ще віддає стару збірку (яка теж лежить під `/presentation/assets`). Перший
@@ -81,80 +93,25 @@ rm ~/.ssh/arbitrio_landing_deploy             # локальна копія бі
 
 Каталог `/srv/arbitrio-landing/releases` на коробці вже створено.
 
-## Одноразова міграція монорепи ArbBot
+## Що змінилось у монорепі ArbBot
 
-Доти, доки її не зроблено, пайплайн кладе файли на диск, але сторінку віддає стара
-збірка з образу. Монорепо (`github.com/valerarv4/ArbBot`) віддає цьому репозиторію
-вміст сторінки й лишає собі тільки опис контейнера.
+Міграція зроблена, лежить у гілці **`ci/landing-to-srv`**
+(github.com/valerarv4/ArbBot) і чекає на мерж — див. «Порядок першого викочування».
 
-🔴 **Порядок важливий.** Спершу має пройти хоча б один зелений деплой ЦЬОГО репозиторію
-— інакше compose підніме контейнер на порожньому `/srv/arbitrio-landing`, не знайде
-`Caddyfile` і піде в цикл падінь через `restart: unless-stopped`.
+| Файл | Що з ним |
+| --- | --- |
+| `admin-saas/docker-compose.prod.yml` | сервіс `landing`: `build: ../landing` → `image: caddy:2-alpine` з монтуванням `/srv/arbitrio-landing:/srv:ro`; healthcheck переїхав із `landing/Dockerfile` сюди |
+| `.github/workflows/deploy-admin-saas.yml` | прибрано job `landing`, `landing/**` із path-фільтрів і зі `$COMPOSE build`; додано пре-фліт на наявність `/srv/arbitrio-landing/Caddyfile` |
+| `admin-saas/Caddyfile` | маршрут `handle_path /presentation/*` **без змін** — виправлені лише коментарі |
+| `landing/` | видалено: вихідники, `Dockerfile` і `Caddyfile` живуть тут |
+| `CLAUDE.md`, `admin-saas/DEPLOY.md`, `entry/README.md` | посилання на `landing/` → на цей репозиторій |
 
-### 1. `admin-saas/docker-compose.prod.yml`
+Пре-фліт вартий окремої згадки: він валить деплой монорепи з названою причиною, якщо
+`/srv/arbitrio-landing/Caddyfile` ще немає. Без нього переплутаний порядок мержів дав
+би `up -d` на порожньому каталозі — Caddy без конфігу, `restart: unless-stopped` у
+циклі падінь, і причина видима лише в логах контейнера, тоді як сам деплой світився б
+зеленим аж до перевірки healthcheck.
 
-Було:
-
-```yaml
-  landing:
-    build: ../landing
-    # Порт назовні не публікується: єдиний вхід — Caddy у тій самій мережі compose.
-    logging:
-      driver: json-file
-      options: { max-size: '10m', max-file: '3' }
-    restart: unless-stopped
-```
-
-Стало:
-
-```yaml
-  landing:
-    # Образ, а не збірка: вміст сторінки й конфіг її віддачі належать репозиторію
-    # `arbitrio_landing` і приїжджають на диск його власним пайплайном. Тут лишився
-    # опис контейнера, який не мусить мінятись, коли міняється сторінка.
-    image: caddy:2-alpine
-    # ⚠️ `caddy` тут ДВІЧІ, і це не одрук: образ не має ENTRYPOINT, тож без другого
-    # слова контейнер намагався б запустити `run` як програму.
-    command: caddy run --config /srv/Caddyfile --adapter caddyfile
-    volumes:
-      # `current` усередині — ВІДНОСНИЙ симлінк на `releases/<sha>`, тому каталог
-      # монтується цілком, а не по одному релізу: перемик на хості діє одразу.
-      - /srv/arbitrio-landing:/srv:ro
-    # Раніше healthcheck приходив із Dockerfile лендінгу; тепер образ чужий, тож
-    # перевірка переїхала сюди. Деплой обох репозиторіїв на неї спирається.
-    healthcheck:
-      test: ['CMD', 'wget', '-q', '-O', '/dev/null', 'http://127.0.0.1:8080/healthz']
-      interval: 30s
-      timeout: 5s
-      start_period: 5s
-      retries: 3
-    # Порт назовні не публікується: єдиний вхід — Caddy у тій самій мережі compose.
-    logging:
-      driver: json-file
-      options: { max-size: '10m', max-file: '3' }
-    restart: unless-stopped
-```
-
-### 2. `.github/workflows/deploy-admin-saas.yml`
-
-- у `on.push.paths` і `on.pull_request.paths` прибрати `- 'landing/**'` (і коментар над ним);
-- прибрати job `landing:` цілком;
-- `needs: [build-test, entry, landing, e2e]` → `needs: [build-test, entry, e2e]`;
-- у скрипті деплою `$COMPOSE build app entry landing` → `$COMPOSE build app entry`.
-
-Блок «Презентаційна сторінка» з перевіркою healthcheck у скрипті **лишити**: він нічого
-не збирає, а те, що контейнер піднявся, перевіряти й далі треба.
-
-### 3. Прибрати вихідники
-
-```bash
-git rm -r landing
-```
-
-Каталог більше не потрібен: вміст, `Dockerfile` і `Caddyfile` живуть тут.
-
-### 4. `admin-saas/Caddyfile`
-
-Маршрут `handle_path /presentation/*` → `reverse_proxy landing:8080` лишається без змін.
-Варто лише поправити коментар, який посилається на `landing/vite.config.js` — тепер це
-`vite.config.js` репозиторію `arbitrio_landing`.
+🔴 Що лишилось обовʼязком монорепи назавжди: маршрут `/presentation/*` у
+`admin-saas/Caddyfile`. Приберуть його — сторінка зникне, і дізнаємось ми про це
+звідси, з димової перевірки.
