@@ -1,0 +1,172 @@
+name: landing CI/CD
+
+# Пайплайн презентаційної сторінки `arbitrio.net/presentation/`.
+#
+# Сторінка віддається контейнером `landing` у стеку `admin-saas` на тій самій коробці
+# Hetzner, але ЗБІРКА сюди більше не заїжджає через монорепо ArbBot: цей репозиторій —
+# єдине джерело правди для вмісту сторінки й для конфігу її віддачі (`deploy/Caddyfile`).
+# У монорепі лишився тільки опис сервісу, який монтує `/srv/arbitrio-landing`.
+#
+# 🔴 Через це деплой НЕ будує образів і не чіпає compose: він кладе файли на диск і
+# перемикає симлінк. Контейнер перезапускається рівно в одному випадку — коли змінився
+# `deploy/Caddyfile`.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Два деплої одночасно перемикали б один симлінк назустріч один одному, і на коробці
+# лишився б той, хто дописав останнім, — не обов'язково новіший коміт.
+#
+# 🔴 Скасовуємо на льоту ЛИШЕ перевірки PR. Обірваний деплой — це прогін, убитий між
+# перемиком симлінка і димовою перевіркою: неперевірений реліз лишився б живим, а
+# відкат, який робить сам скрипт, не встиг би спрацювати.
+concurrency:
+  group: landing-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# Пайплайн нічого не пише в GitHub — ні коментарів, ні релізів, ні пакетів. Токен
+# йому потрібен рівно на checkout, тобто на читання.
+permissions:
+  contents: read
+
+env:
+  # Хост і користувач лежать у секретах, а не тут: репозиторій може стати публічним, а
+  # адреса коробки з іменем користувача — половина роботи для того, хто підбирає ключі.
+  REMOTE_ROOT: /srv/arbitrio-landing
+  PUBLIC_URL: https://arbitrio.net/presentation/
+
+jobs:
+  # ── Гейт: збірка Vite + два інваріанти, які інакше випливуть уже на проді ──────
+  #
+  # Тестів у лендінгу немає — і не буде: це статична сторінка без логіки. Тож гейт
+  # стереже саме те, що ламається мовчки, а не те, що ловить tsc.
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Та сама мажорна версія, що й у решти збірок цього проєкту на коробці.
+          node-version: '24'
+          cache: npm
+
+      - name: Install
+        # `ci`, а не `install`: деплоїться рівно те, що описано в package-lock.json.
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # Головна пастка цієї сторінки — роз'їзд `base` у Vite і шляху в публічному Caddy.
+      # Вона не видима ні в збірці, ні в логах: сторінка збереться, доїде і віддасть
+      # ПОРОЖНІЙ ЕКРАН, бо браузер попросить бандл за адресою кореня, тобто у вхідних
+      # дверей, і дістане звідти HTML замість JavaScript.
+      - name: Base path matches the Caddy route
+        run: |
+          set -euo pipefail
+          grep -q 'src="/presentation/assets/' dist/index.html \
+            || { echo "❌ dist/index.html не посилається на /presentation/assets — розійшовся base у vite.config.js"; exit 1; }
+          echo "✅ base збірки — /presentation/"
+
+      # ⚠️ Валідація ДО того, як файл поїде на коробку. Зламаний конфіг означає, що
+      # контейнер не підніметься, `restart: unless-stopped` заганяє його в цикл, і
+      # сторінка лягає цілком. Перевіряємо тим самим образом і за тим самим шляхом
+      # (`/srv/Caddyfile`), яким його побачить рантайм, — інакше перевіряли б не те.
+      - name: Caddyfile is valid
+        run: |
+          set -euo pipefail
+          docker run --rm -v "$PWD/deploy:/srv:ro" caddy:2-alpine \
+            caddy validate --config /srv/Caddyfile --adapter caddyfile
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          # Артефакт потрібен рівно наступному job'у в цьому ж прогоні.
+          retention-days: 1
+          if-no-files-found: error
+
+  # ── Деплой на Hetzner — лише push у main, після зеленого гейта ─────────────────
+  deploy:
+    needs: [build]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      # Потрібен рівно заради `deploy/Caddyfile`: у артефакті лежить сама збірка.
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Set up SSH
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          # Ключ хоста ПРИШПИЛЕНИЙ, а не добирається `ssh-keyscan`'ом на кожен прогін:
+          # keyscan довіряє тому, хто відповів, тобто не перевіряє нічого взагалі.
+          # Ім'я хоста тут захешоване (`ssh-keyscan -H`), тож адреса коробки з файла
+          # не читається, а перевірка працює як слід.
+          #
+          # 🔴 Якщо коробку перевстановлять, ключ зміниться і деплой впаде на
+          # `HOST KEY VERIFICATION FAILED`. Це не баг: оновити рядок нижче виводом
+          # `ssh-keyscan -H -t ed25519 <ip>` — свідоме рішення людини, а не мовчазна
+          # згода на будь-який новий ключ.
+          printf '%s\n' '|1|mvPzKt/bawU2/R/axY9mI5uHpTk=|NA5LqbesmSCslmAb/Ccaw1II8AM= ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB239Jt184zcGBGCUyqzoKkNzMJdBCCLTh2PptuBXnMS' > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Upload release
+        env:
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          USER_NAME: ${{ secrets.DEPLOY_USER }}
+          PORT: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
+        run: |
+          set -euo pipefail
+          REL="$REMOTE_ROOT/releases/${GITHUB_SHA}"
+          SSH="ssh -p $PORT -i $HOME/.ssh/id_ed25519"
+
+          # Пре-фліт по вільному місцю. Коробка спільна з ботом, адмінкою і Postgres,
+          # тож повний диск тут виглядав би як загадковий збій rsync, а не як повний диск.
+          $SSH "$USER_NAME@$HOST" "
+            set -eu
+            mkdir -p '$REL'
+            free_mb=\$(df -Pm '$REMOTE_ROOT' | awk 'NR==2 {print \$4}')
+            if [ \"\$free_mb\" -lt 512 ]; then
+              echo \"❌ Мало місця під '$REMOTE_ROOT': \${free_mb} MiB, треба 512 MiB\"
+              df -h '$REMOTE_ROOT'; exit 1
+            fi
+            echo \"✅ '$REMOTE_ROOT': \${free_mb} MiB вільно\"
+          "
+
+          # Реліз кладеться в СВІЙ каталог, а не поверх робочого. Доти, доки симлінк не
+          # перемкнули, сторінка віддає стару збірку — навіть якщо rsync обірветься
+          # посередині. `--delete` тут про повторний прогін того самого SHA, не про
+          # чужі релізи.
+          rsync -az --delete --chmod=D755,F644 \
+            -e "$SSH" dist/ "$USER_NAME@$HOST:$REL/"
+
+          # Конфіг віддачі їде поруч зі збіркою: він теж належить цьому репозиторію.
+          rsync -az --chmod=F644 \
+            -e "$SSH" deploy/Caddyfile "$USER_NAME@$HOST:$REMOTE_ROOT/Caddyfile"
+
+      - name: Activate release
+        env:
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          USER_NAME: ${{ secrets.DEPLOY_USER }}
+          PORT: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
+        run: |
+          set -euo pipefail
+          ssh -p "$PORT" -i ~/.ssh/id_ed25519 "$USER_NAME@$HOST" \
+            "ROOT='$REMOTE_ROOT' SHA='$GITHUB_SHA' PUBLIC_URL='$PUBLIC_URL' bash -s" \
+            < .github/deploy/activate.sh
