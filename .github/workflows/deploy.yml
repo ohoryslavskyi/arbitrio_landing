@@ -33,8 +33,21 @@ permissions:
   contents: read
 
 env:
-  # Хост і користувач лежать у секретах, а не тут: репозиторій може стати публічним, а
-  # адреса коробки з іменем користувача — половина роботи для того, хто підбирає ключі.
+  # Хост і користувач лежать ТУТ, а не в секретах, і це зважене рішення, а не лінь.
+  #
+  # Секретом вони не є за фактом: `arbitrio.net` резолвиться в цю саму адресу з
+  # публічного DNS, а `root` — перше, що пробує будь-який сканер. Ховати те, що вже
+  # опубліковане, — це не захист, а лише ще два місця, де деплой мовчки ламається,
+  # якщо хтось помилиться в імені секрету.
+  #
+  # 🔴 Захищає тут не таємність адреси, а `permitrootlogin prohibit-password` на
+  # коробці: root заходить ВИКЛЮЧНО по ключу, і підбирати йому пароль неможливо
+  # у принципі. Зміниться це — і рядки нижче доведеться переглянути.
+  #
+  # Справжній секрет у цьому пайплайні рівно один — приватний ключ.
+  DEPLOY_HOST: 49.12.102.39
+  DEPLOY_USER: root
+  DEPLOY_PORT: '22'
   REMOTE_ROOT: /srv/arbitrio-landing
   PUBLIC_URL: https://arbitrio.net/presentation/
 
@@ -98,32 +111,30 @@ jobs:
 
     steps:
       # ⚠️ Найперший крок, і не з обережності, а з досвіду. Секрет, якого немає,
-      # приходить у крок ПОРОЖНІМ рядком — мовчки, без жодної помилки. Далі
-      # `ssh "$USER_NAME@$HOST"` дістає адресу `@`, тобто адресу з порожнім хостом, і
-      # друкує власний usage із кодом 255. Діагноз «не заданий DEPLOY_HOST» із того
-      # виводу не читається взагалі: виглядає як зламана команда ssh у пайплайні.
+      # приходить у крок ПОРОЖНІМ рядком — мовчки, без жодної помилки. Раніше в
+      # секретах лежали ще й хост із користувачем, і незаданий хост давав
+      # `ssh "@"` — адресу з порожнім хостом, на яку ssh друкує власний usage і
+      # виходить із 255. Діагноз «не заданий секрет» із того виводу не читався
+      # взагалі: виглядало як зламана команда ssh у пайплайні. Саме так упав перший
+      # бойовий прогін.
       #
-      # Саме так упав перший бойовий прогін. Назвати відсутній секрет коштує вісім
-      # рядків і економить півгодини на здогадки.
+      # Ті два переїхали в `env` (див. коментар там), тож лишилась одна перевірка —
+      # але лишилась: без неї порожній ключ дав би `Permission denied (publickey)`,
+      # тобто знову не ту причину.
       #
-      # 🔴 Друкуємо ІМЕНА, ніколи не значення: у логи Actions секрети не потрапляють
-      # навіть маскованими.
-      - name: Secrets are set
+      # 🔴 Друкуємо ІМЕНА, ніколи не значення: секрети не мусять потрапляти в логи
+      # Actions навіть маскованими.
+      - name: Secret is set
         env:
-          HOST: ${{ secrets.DEPLOY_HOST }}
-          USER_NAME: ${{ secrets.DEPLOY_USER }}
           SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
         run: |
           set -euo pipefail
-          fail=0
-          [ -n "${HOST:-}" ]      || { echo "❌ не заданий секрет DEPLOY_HOST (очікується 49.12.102.39)"; fail=1; }
-          [ -n "${USER_NAME:-}" ] || { echo "❌ не заданий секрет DEPLOY_USER (очікується root)"; fail=1; }
-          [ -n "${SSH_KEY:-}" ]   || { echo "❌ не заданий секрет DEPLOY_SSH_KEY"; fail=1; }
-          if [ "$fail" -ne 0 ]; then
+          if [ -z "${SSH_KEY:-}" ]; then
+            echo "❌ не заданий секрет DEPLOY_SSH_KEY"
             echo "   Settings → Secrets and variables → Actions. Подробиці — deploy/README.md."
             exit 1
           fi
-          echo "✅ секрети на місці"
+          echo "✅ DEPLOY_SSH_KEY на місці"
 
       # Потрібен рівно заради `deploy/Caddyfile`: у артефакті лежить сама збірка.
       - uses: actions/checkout@v4
@@ -149,8 +160,10 @@ jobs:
             || { echo "❌ DEPLOY_SSH_KEY не читається як приватний ключ — скопійовано не повністю або він із паролем"; exit 1; }
           # Ключ хоста ПРИШПИЛЕНИЙ, а не добирається `ssh-keyscan`'ом на кожен прогін:
           # keyscan довіряє тому, хто відповів, тобто не перевіряє нічого взагалі.
-          # Ім'я хоста тут захешоване (`ssh-keyscan -H`), тож адреса коробки з файла
-          # не читається, а перевірка працює як слід.
+          #
+          # Ім'я хоста в рядку захешоване — це формат `ssh-keyscan -H`, а не спроба
+          # сховати адресу: вона й так стоїть відкрито в `env` вище. Хеш лишається
+          # тому, що так його зручно оновлювати тією ж командою, не переписуючи руками.
           #
           # 🔴 Якщо коробку перевстановлять, ключ зміниться і деплой впаде на
           # `HOST KEY VERIFICATION FAILED`. Це не баг: оновити рядок нижче виводом
@@ -160,18 +173,14 @@ jobs:
           chmod 600 ~/.ssh/known_hosts
 
       - name: Upload release
-        env:
-          HOST: ${{ secrets.DEPLOY_HOST }}
-          USER_NAME: ${{ secrets.DEPLOY_USER }}
-          PORT: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
         run: |
           set -euo pipefail
           REL="$REMOTE_ROOT/releases/${GITHUB_SHA}"
-          SSH="ssh -p $PORT -i $HOME/.ssh/id_ed25519"
+          SSH="ssh -p $DEPLOY_PORT -i $HOME/.ssh/id_ed25519"
 
           # Пре-фліт по вільному місцю. Коробка спільна з ботом, адмінкою і Postgres,
           # тож повний диск тут виглядав би як загадковий збій rsync, а не як повний диск.
-          $SSH "$USER_NAME@$HOST" "
+          $SSH "$DEPLOY_USER@$DEPLOY_HOST" "
             set -eu
             mkdir -p '$REL'
             free_mb=\$(df -Pm '$REMOTE_ROOT' | awk 'NR==2 {print \$4}')
@@ -187,19 +196,15 @@ jobs:
           # посередині. `--delete` тут про повторний прогін того самого SHA, не про
           # чужі релізи.
           rsync -az --delete --chmod=D755,F644 \
-            -e "$SSH" dist/ "$USER_NAME@$HOST:$REL/"
+            -e "$SSH" dist/ "$DEPLOY_USER@$DEPLOY_HOST:$REL/"
 
           # Конфіг віддачі їде поруч зі збіркою: він теж належить цьому репозиторію.
           rsync -az --chmod=F644 \
-            -e "$SSH" deploy/Caddyfile "$USER_NAME@$HOST:$REMOTE_ROOT/Caddyfile"
+            -e "$SSH" deploy/Caddyfile "$DEPLOY_USER@$DEPLOY_HOST:$REMOTE_ROOT/Caddyfile"
 
       - name: Activate release
-        env:
-          HOST: ${{ secrets.DEPLOY_HOST }}
-          USER_NAME: ${{ secrets.DEPLOY_USER }}
-          PORT: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
         run: |
           set -euo pipefail
-          ssh -p "$PORT" -i ~/.ssh/id_ed25519 "$USER_NAME@$HOST" \
+          ssh -p "$DEPLOY_PORT" -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_HOST" \
             "ROOT='$REMOTE_ROOT' SHA='$GITHUB_SHA' PUBLIC_URL='$PUBLIC_URL' bash -s" \
             < .github/deploy/activate.sh
