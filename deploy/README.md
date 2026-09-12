@@ -70,10 +70,28 @@ prohibit-password` — root заходить **виключно по ключу*
 Окремий ключ саме для деплою, а не твій особистий:
 
 ```bash
-ssh-keygen -t ed25519 -N '' -C 'gha-deploy' -f ~/.ssh/arbitrio_landing_deploy
-ssh-copy-id -i ~/.ssh/arbitrio_landing_deploy.pub root@49.12.102.39
-pbcopy < ~/.ssh/arbitrio_landing_deploy       # → у секрет DEPLOY_SSH_KEY
-rm ~/.ssh/arbitrio_landing_deploy             # локальна копія більше не потрібна
+# 1. Ключ БЕЗ парольної фрази: з паролем пайплайн його не відкриє.
+ssh-keygen -t ed25519 -N '' -C 'gha-deploy' -f ~/.ssh/gha
+
+# 2. Публічний — на коробку.
+#
+# ⚠️ НЕ `ssh-copy-id -i ~/.ssh/gha.pub`: воно бере вказаний ключ і для
+# АВТЕНТИФІКАЦІЇ теж, а на сервері його ще немає — тож питає пароль root, якого
+# немає в принципі (`permitrootlogin prohibit-password`). Тому явно кажемо,
+# яким ключем заходити.
+cat ~/.ssh/gha.pub | ssh -i ~/.ssh/id_ed25519 root@49.12.102.39 \
+  'cat >> ~/.ssh/authorized_keys'
+
+# 3. Перевірити, що новий ключ справді пускає, ДО того як покладатись на нього.
+ssh -i ~/.ssh/gha -o IdentitiesOnly=yes root@49.12.102.39 'echo ok'
+
+# 4. Приватний — у буфер, звідти в секрет DEPLOY_SSH_KEY.
+pbcopy < ~/.ssh/gha
+
+# 5. І лише ПІСЛЯ того, як секрет збережено, прибрати локальну копію.
+#    Навпаки — і ключ доведеться генерувати заново: приватної половини більше
+#    ніде немає.
+rm ~/.ssh/gha ~/.ssh/gha.pub
 ```
 
 ⚠️ Перший крок деплою перевіряє, що секрет заданий, і що ключ узагалі читається.
