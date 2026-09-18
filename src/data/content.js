@@ -53,19 +53,17 @@ export const learningSteps = [
 export const partnerLevels = [
   { n: '01', share: 60, requirement: 'Базовий партнерський рівень' },
   { n: '02', share: 70, requirement: 'Торговий результат від $3 000' },
-  { n: '03', share: 75, requirement: '4 партнери 2-го рівня у різних гілках' },
-  { n: '04', share: 80, requirement: '4 партнери 3-го рівня у різних гілках' },
-  { n: '05', share: 85, requirement: '4 партнери 4-го рівня у різних гілках' },
-  { n: '06', share: 90, requirement: '4 партнери 5-го рівня у різних гілках', top: true },
+  { n: '03', share: 80, requirement: '4 партнери 2-го рівня у різних гілках' },
+  { n: '04', share: 85, requirement: '4 партнери 3-го рівня у різних гілках' },
+  { n: '05', share: 90, requirement: '4 партнери 4-го рівня у різних гілках', top: true },
 ];
 
 export const connectionRewards = [
   { level: '1-й рівень', amount: '$50' },
   { level: '2-й рівень', amount: '$150' },
-  { level: '3-й рівень', amount: '$180' },
-  { level: '4-й рівень', amount: '$200' },
-  { level: '5-й рівень', amount: '$230' },
-  { level: '6-й рівень', amount: '$250', top: true },
+  { level: '3-й рівень', amount: '$200' },
+  { level: '4-й рівень', amount: '$230' },
+  { level: '5-й рівень', amount: '$250', top: true },
 ];
 
 export const partnerBenefits = [
@@ -84,7 +82,7 @@ export const penalties = [
 
 export const stats = [
   { value: 'до 90%', caption: 'частка партнера від PnL', accent: true, flame: true },
-  { value: '6', caption: 'рівнів партнерської програми' },
+  { value: '5', caption: 'рівнів партнерської програми' },
   { value: '24/7', caption: 'ринок не зупиняється — система теж' },
 ];
 

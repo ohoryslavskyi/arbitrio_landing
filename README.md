@@ -78,7 +78,7 @@ src/
     MissionSection.vue
     PlatformSection.vue
     LearningSection.vue       демо-режим і чотири кроки
-    PartnerSection.vue        шість рівнів, винагороди, переваги
+    PartnerSection.vue        пʼять рівнів, винагороди, переваги
     PricingSection.vue
     CtaSection.vue
     SiteFooter.vue

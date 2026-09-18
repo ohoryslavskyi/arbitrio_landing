@@ -3,7 +3,7 @@
     <header class="partner-head">
       <h2 class="section-title">Партнерська програма</h2>
       <p class="section-lead">
-        Шість рівнів, до 90% від PnL <span class="flame" aria-hidden="true">🔥</span>
+        Пʼять рівнів, до 90% від PnL <span class="flame" aria-hidden="true">🔥</span>
       </p>
     </header>
 
