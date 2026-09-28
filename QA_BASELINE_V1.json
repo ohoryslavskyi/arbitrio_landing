@@ -1,0 +1,59 @@
+{
+  "languages": [
+    "uk",
+    "ru",
+    "en",
+    "it"
+  ],
+  "translationKeysPerLanguage": 116,
+  "chromium": {
+    "profiles": 104,
+    "failed": 0,
+    "recheckedProfiles": [
+      "Surface Pro 7 vertical",
+      "iPad Pro 13 vertical",
+      "Surface Pro 10 vertical",
+      "Asus Zenbook Fold vertical",
+      "Asus Zenbook Fold horizontal-spanned",
+      "JioPhone 2 vertical",
+      "Laptop with HiDPI screen vertical",
+      "Laptop with MDPI screen vertical"
+    ]
+  },
+  "webkit": {
+    "profiles": 10,
+    "failed": 0,
+    "recheckedProfiles": [
+      "iPad Pro 13 vertical"
+    ]
+  },
+  "firefox": {
+    "profiles": 8,
+    "failed": 0
+  },
+  "interactions": {
+    "chromium": {
+      "engine": "chromium",
+      "languageSwitch": true,
+      "persistence": true,
+      "translationCoverage": true,
+      "pinchAndRailSwipe": "passed",
+      "pageErrors": []
+    },
+    "webkit": {
+      "engine": "webkit",
+      "languageSwitch": true,
+      "persistence": true,
+      "translationCoverage": true,
+      "pinchAndRailSwipe": "not run",
+      "pageErrors": []
+    }
+  },
+  "notTested": [
+    "Physical devices",
+    "Actual Safari application",
+    "Telegram in-app browser",
+    "Actual branded Google Chrome and Microsoft Edge applications",
+    "OS keyboard, cutouts, hinges and browser toolbars"
+  ]
+}

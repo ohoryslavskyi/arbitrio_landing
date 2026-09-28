@@ -1,13 +1,94 @@
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url(../assets/fonts/geist-cyrillic-ext-wght-normal.woff2) format('woff2-variations');
+  unicode-range: U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;
+}
+
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url(../assets/fonts/geist-cyrillic-wght-normal.woff2) format('woff2-variations');
+  unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;
+}
+
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url(../assets/fonts/geist-latin-ext-wght-normal.woff2) format('woff2-variations');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url(../assets/fonts/geist-latin-wght-normal.woff2) format('woff2-variations');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url(../assets/fonts/geist-mono-cyrillic-ext-wght-normal.woff2) format('woff2-variations');
+  unicode-range: U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;
+}
+
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url(../assets/fonts/geist-mono-cyrillic-wght-normal.woff2) format('woff2-variations');
+  unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;
+}
+
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url(../assets/fonts/geist-mono-symbols2-wght-normal.woff2) format('woff2-variations');
+  unicode-range: U+2000-2001,U+2004-2008,U+200A,U+23B8-23BD,U+2500-259F;
+}
+
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url(../assets/fonts/geist-mono-latin-ext-wght-normal.woff2) format('woff2-variations');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url(../assets/fonts/geist-mono-latin-wght-normal.woff2) format('woff2-variations');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
 /* ==========================================================================
    Arbitrio — глобальна основа
    Тут живе тільки те, що не може бути локальним: шрифти, токени, ресети,
    keyframes і класи, спільні для кількох секцій.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400..700&display=swap');
 
 :root {
+  color-scheme: dark;
+  --header-bg: rgba(7,12,19,.97);
   /* поверхні */
   --bg: #05070c;
   --bg-alt: #070c13;
@@ -61,16 +142,21 @@
 html {
   background: var(--bg);
   scroll-behavior: smooth;
-  scroll-padding-top: 32px;
+  scroll-padding-top: 84px;
+  /* Keep scrolling, without the platform-dependent bright scrollbar gutter. */
+  scrollbar-width: none;
 }
+
+html::-webkit-scrollbar { width: 0; height: 0; }
 
 body {
   margin: 0;
   background: var(--bg);
-  color: #e6ecf2;
+  color: var(--ink-2);
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
   text-wrap: pretty;
+  overflow-wrap: anywhere;
 }
 
 a { color: var(--blue); text-decoration: none; }
@@ -158,9 +244,9 @@ h1, h2, h3, p { margin: 0; }
 .btn--primary:hover { background: var(--blue-hi); color: var(--on-blue); }
 
 .btn--ghost {
-  background: #0b1017;
+  background: var(--surface);
   border: 1px solid rgba(255, 255, 255, .12);
-  color: #e6ecf2;
+  color: var(--ink-2);
   font-weight: 500;
 }
 .btn--ghost:hover { border-color: rgba(47, 140, 255, .45); color: var(--ink); }
@@ -305,3 +391,52 @@ h1, h2, h3, p { margin: 0; }
   .flame, .pulse-dot { animation: none; }
   .card--lift:hover, .card--raise:hover { transform: none; }
 }
+
+/* Reserve a narrow touch-navigation lane, including device safe areas. */
+@media (max-width: 1199px) {
+  :root { --pad: 36px; }
+}
+@media (max-width: 480px) {
+  :root { --pad: 24px; }
+
+  .btn, .pill { white-space: normal; max-width: 100%; }
+}
+
+/* Light palette shared by the landing and its navigation. */
+:root[data-theme='light'] {
+  color-scheme: light;
+  --header-bg: rgba(237,242,248,.97);
+  --bg: #edf2f8; --bg-alt: #e8eef6;
+  --surface: #fff; --surface-hi: #f5f8fc; --surface-inset: #e3ebf5; --surface-dark: #dde7f3; --row-hover: #e5eefb;
+  --ink: #0c1422; --ink-2: #344356; --ink-3: #526379; --ink-4: #586b82; --ink-5: #5a6a80; --ink-muted: #617189; --ink-caption: #45617f; --ink-panel: #405c7e;
+  --blue: #176ee8; --blue-hi: #125dc8; --blue-text: #185fb5; --cyan: #087f95; --on-blue: #fff;
+  --warm: #bf4935; --warm-ink: #9e4537;
+  --hairline: rgba(41,65,96,.13); --divider: rgba(41,65,96,.12); --blue-line: rgba(23,110,232,.32);
+}
+[data-theme='light'] .hero-title span, [data-theme='light'] .hero-claim { background-image: linear-gradient(90deg, #008c82, #1673c6); }
+[data-theme='light'] .btn--ghost, [data-theme='light'] .cta-secondary { background: var(--surface); border-color: var(--hairline); color: var(--ink-2); }
+[data-theme='light'] .pill--muted { border-color: var(--hairline); }
+[data-theme='light'] .rail { background: transparent; }
+[data-theme='light'] .rail-label { background: rgba(237,242,248,.96); color: var(--ink-2); }
+[data-theme='light'] .rail-dot { background: #8a9cb4; }
+[data-theme='light'] .rail-item--active .rail-dot { background: var(--blue); }
+@media (min-width: 721px) { [data-theme='light'] .team-caption { --ink: #f2f6fb; --ink-2: #c7d3e2; --ink-3: #a6b4c6; --ink-caption: #8faed5; } }
+[data-theme='light'] .verdict-link:hover { color: #125dc8; }
+
+/* The document always fills the viewport; decorative effects cannot add a gutter. */
+html, body, #app { width: 100%; min-width: 0; }
+body { overflow-x: clip; }
+@media (min-width: 1200px) {
+  html { scroll-padding-top: 24px; }
+  .footer { display: none; }
+}
+.hero .hero-claim {
+  background-image: linear-gradient(100deg, #90eedb 0%, #51d7cf 22%, #359df4 45%, #1764ca 65%, #51d7cf 85%, #90eedb 100%);
+  background-size: 220% 100%;
+  animation: claimFlow 8s ease-in-out infinite alternate;
+}
+[data-theme='light'] .hero .hero-claim {
+  background-image: linear-gradient(100deg, #168e89 0%, #087d8b 22%, #1669b7 45%, #124594 65%, #087d8b 85%, #168e89 100%);
+}
+@keyframes claimFlow { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
+@media (prefers-reduced-motion: reduce) { .hero .hero-claim { animation: none; } }

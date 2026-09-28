@@ -1,4 +1,5 @@
 <template>
+  <LandingHeader />
   <div class="page">
     <!-- Інтерактивна сітка квадратів за hero. aria-hidden — це декор. -->
     <div ref="gridEl" class="cell-grid" aria-hidden="true">
@@ -27,6 +28,7 @@
 </template>
 
 <script setup>
+import LandingHeader from './components/LandingHeader.vue';
 import HeroSection from './components/HeroSection.vue';
 import TeamSection from './components/TeamSection.vue';
 import StatsBar from './components/StatsBar.vue';
@@ -57,7 +59,7 @@ const { gridEl, cellCount } = usePointerGrid();
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
+  right: -64px;
   height: 520px;
   pointer-events: none;
   overflow: hidden;

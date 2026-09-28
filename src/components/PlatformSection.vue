@@ -1,19 +1,10 @@
 <template>
   <section id="platform" class="platform">
-    <h2 class="section-title platform-title">Побудована на висновках, а не на обіцянках</h2>
+    <h2 class="section-title platform-title"> {{ t('m033') }} </h2>
 
     <div class="platform-cols">
-      <p class="body-text platform-col">
-        Ми пройшли довгий шлях досліджень: ризик-менеджмент арбітражних стратегій, аналіз
-        вразливостей і повторюваних збоїв у конкурентних рішеннях, розбір реальних інцидентів
-        на ринку. Кожен знайдений сценарій відмови ми врахували в архітектурі — у результаті
-        система працює надійніше там, де інші ламаються.
-      </p>
-      <p class="body-text platform-col">
-        Захист коштів, стійкість до кібератак, продуктивність під навантаженням і стабільність
-        виконання — це не окремі функції, а вимоги, під які проєктувався кожен модуль. Реліз
-        проходить лише після повного циклу автоматизованих перевірок.
-      </p>
+      <p class="body-text platform-col"> {{ t('m034') }} </p>
+      <p class="body-text platform-col"> {{ t('m035') }} </p>
     </div>
 
     <div class="platform-grid">
@@ -22,15 +13,17 @@
         :key="card.title"
         class="pcard card card--lift"
       >
-        <span class="eyebrow">{{ card.eyebrow }}</span>
-        <h3 class="pcard-title">{{ card.title }}</h3>
-        <p class="pcard-text">{{ card.text }}</p>
+        <span class="eyebrow">{{ t(card.eyebrow) }}</span>
+        <h3 class="pcard-title">{{ t(card.title) }}</h3>
+        <p class="pcard-text">{{ t(card.text) }}</p>
       </article>
     </div>
   </section>
 </template>
 
 <script setup>
+import { t } from '../i18n/index.js';
+
 import { platformCards } from '../data/content.js';
 </script>
 

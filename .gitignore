@@ -24,3 +24,5 @@ pnpm-debug.log*
 Thumbs.db
 desktop.ini
 *.local
+# Local browser QA output
+test-results/

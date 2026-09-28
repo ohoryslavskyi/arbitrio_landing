@@ -3,9 +3,12 @@
   <nav
     class="rail"
     :class="{ 'rail--on': visible }"
-    aria-label="Розділи сторінки"
+    @touchstart.passive="startBrowse"
+    @touchmove="browse"
+    :aria-label="t('m048')"
     :aria-hidden="visible ? undefined : 'true'"
   >
+    <div class="rail-track" :style="{ '--active-index': browseIndex }">
     <a
       v-for="item in sideNavItems"
       :key="item.id"
@@ -15,17 +18,35 @@
       :aria-current="item.id === activeId ? 'true' : undefined"
       :tabindex="visible ? undefined : -1"
     >
-      <span class="rail-label">{{ item.label }}</span>
+      <span class="rail-label">{{ t(item.label) }}</span>
       <span class="rail-dot" aria-hidden="true"></span>
     </a>
+    </div>
   </nav>
 </template>
 
 <script setup>
+import { t } from '../i18n/index.js';
+
+import { computed, ref, watch } from 'vue';
 import { sideNavItems } from '../data/content.js';
 import { useScrollSpy } from '../composables/useScrollSpy.js';
 
-const { visible, activeId } = useScrollSpy(sideNavItems.map((i) => i.id));
+const { visible, activeId } = useScrollSpy(sideNavItems.map((i) => i.id), { showAfter: 120 });
+const activeIndex = computed(() => Math.max(0, sideNavItems.findIndex(item => item.id === activeId.value)));
+const browseIndex = ref(0);
+watch(activeIndex, index => { browseIndex.value = index; }, { immediate: true });
+let touchY = 0;
+let startIndex = 0;
+function startBrowse(event) {
+  touchY = event.touches[0].clientY;
+  startIndex = browseIndex.value;
+}
+function browse(event) {
+  if (event.touches.length !== 1 || window.innerWidth >= 1200) return;
+  event.preventDefault();
+  browseIndex.value = Math.max(0, Math.min(sideNavItems.length - 1, startIndex + (touchY - event.touches[0].clientY) / 44));
+}
 </script>
 
 <style scoped>
@@ -42,6 +63,13 @@ const { visible, activeId } = useScrollSpy(sideNavItems.map((i) => i.id));
   visibility: hidden;
   transform: translateY(-50%) translateX(14px);
   transition: opacity .38s var(--ease), transform .38s var(--ease), visibility .38s;
+}
+
+.rail-track {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
 }
 
 .rail--on {
@@ -123,11 +151,10 @@ const { visible, activeId } = useScrollSpy(sideNavItems.map((i) => i.id));
 }
 
 /* Місця в бічному полі вистачає лише на широких екранах: --wrap 1240px */
-@media (max-width: 1199px) {
-  .rail { display: none; }
-}
+@media (max-width: 1199px) { .rail { display: none; } }
 
 @media (prefers-reduced-motion: reduce) {
+  .rail-track,
   .rail,
   .rail-label,
   .rail-dot { transition: none; }

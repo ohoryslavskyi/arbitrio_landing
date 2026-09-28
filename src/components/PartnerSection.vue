@@ -1,17 +1,14 @@
 <template>
   <section id="levels" class="partner">
     <header class="partner-head">
-      <h2 class="section-title">Партнерська програма</h2>
-      <p class="section-lead">
-        Пʼять рівнів, до 90% від PnL <span class="flame" aria-hidden="true">🔥</span>
+      <h2 class="section-title"> {{ t('m024') }} </h2>
+      <p class="section-lead"> {{ t('m025') }} <span class="flame" aria-hidden="true">🔥</span>
       </p>
     </header>
 
     <div class="claim">
-      <p class="claim-lead">Такої частки від PnL не пропонує жоден інший сервіс на ринку.</p>
-      <p class="claim-note">
-        Досягнутий рівень зберігається навіть у разі тимчасової неактивності партнера.
-      </p>
+      <p class="claim-lead"> {{ t('m026') }} </p>
+      <p class="claim-note"> {{ t('m027') }} </p>
     </div>
 
     <!-- Шкали заповнюються один раз, коли блок входить у вікно -->
@@ -23,7 +20,7 @@
         :class="{ 'level--top': level.top }"
       >
         <div class="level-id">
-          <span class="level-kicker">Рівень</span>
+          <span class="level-kicker"> {{ t('m028') }} </span>
           <b class="level-n">{{ level.n }}</b>
         </div>
 
@@ -31,18 +28,18 @@
           <i class="level-fill" :style="{ width: (level.share * progress).toFixed(2) + '%' }"></i>
         </div>
 
-        <div class="level-req">{{ level.requirement }}</div>
+        <div class="level-req">{{ t(level.requirement) }}</div>
 
         <div class="level-share">
           <b class="level-pct">{{ Math.round(level.share * progress) }}%</b>
-          <span class="level-unit">від PnL</span>
+          <span class="level-unit"> {{ t('m029') }} </span>
         </div>
       </article>
     </div>
 
     <div class="partner-cards">
       <div class="card card--glow rewards">
-        <h3 class="card-title">Винагорода за підключення</h3>
+        <h3 class="card-title"> {{ t('m030') }} </h3>
 
         <div class="rewards-list">
           <div
@@ -51,7 +48,7 @@
             class="reward row-hover"
             :class="{ 'reward--top': row.top }"
           >
-            <span class="reward-level">{{ row.level }}</span>
+            <span class="reward-level">{{ t(row.level) }}</span>
             <b class="reward-amount">{{ row.amount }}</b>
           </div>
         </div>
@@ -59,26 +56,25 @@
 
       <div class="partner-side">
         <div class="card card--glow benefits">
-          <h3 class="card-title">Що отримує партнер</h3>
+          <h3 class="card-title"> {{ t('m031') }} </h3>
           <div class="benefits-list">
             <span
               v-for="item in partnerBenefits"
               :key="item"
               class="benefit chip-hover"
-            >{{ item }}</span>
+            >{{ t(item) }}</span>
           </div>
         </div>
 
-        <p class="partner-footnote">
-          Різниця у винагороді розподіляється між вищими рівнями структури згідно з правилами
-          програми.
-        </p>
+        <p class="partner-footnote"> {{ t('m032') }} </p>
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
+import { t } from '../i18n/index.js';
+
 import { partnerLevels, connectionRewards, partnerBenefits } from '../data/content.js';
 import { useLevelBars } from '../composables/useLevelBars.js';
 
@@ -171,7 +167,7 @@ const { rootEl, progress } = useLevelBars();
   font-family: var(--mono);
   font-size: 19px;
   font-weight: 600;
-  color: #e6ecf2;
+  color: var(--ink-2);
 }
 .level--top .level-n { color: var(--blue-text); }
 

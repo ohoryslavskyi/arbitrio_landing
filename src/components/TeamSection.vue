@@ -4,31 +4,23 @@
     <div class="team-mesh" aria-hidden="true"></div>
 
     <div class="wrap team-wrap">
-      <h2 class="section-title team-title">Команда</h2>
+      <h2 class="section-title team-title"> {{ t('m051') }} </h2>
 
       <div class="team-cols">
         <div class="team-col">
-          <p class="body-text">
-            Ми — команда досвідчених IT-фахівців, які працювали на різних етапах SDLC: від аналізу
-            вимог до розробки, тестування, релізу та подальшого розвитку продукту.
-          </p>
-          <p class="body-text">
-            У певний момент своєї карʼєри ми вирішили створити не просто продукт, а цілу
-            криптоекосистему і працювати над тим, у що справді віримо!
-          </p>
+          <p class="body-text"> {{ t('m052') }} </p>
+          <p class="body-text"> {{ t('m053') }} </p>
         </div>
 
-        <p class="body-text team-col team-col--dim">
-          У нашій команді зібралися спеціалісти різних напрямків: розробники, QA-інженери,
-          бізнес-аналітики, менеджери, маркетологи та фахівці з розвитку продукту. За плечима
-          команди — досвід роботи як із вузькоспеціалізованими рішеннями, так і з масштабними
-          технологічними продуктами у складних доменах, зокрема FinTech, Crypto/Web3, AML, InsurTech.
-        </p>
+        <p class="body-text team-col team-col--dim"> {{ t('m054') }} </p>
       </div>
 
       <!-- Фото надане власником. Замінюється файлом public/team-masks.png -->
       <figure class="team-media">
-        <img class="team-photo" src="/team-masks.png" alt="Команда Arbitrio" />
+        <div class="team-image-viewport" @touchstart="startTouch" @touchmove="moveTouch" @touchend="endTouch" @touchcancel="endTouch">
+          <img class="team-photo" src="/team-masks.png" :alt="t('m055')" :style="{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }" draggable="false" />
+        </div>
+        <button v-if="zoom > 1" class="team-reset" type="button" @click="resetZoom"> {{ t('m056') }} </button>
 
         <div class="team-scan" aria-hidden="true"></div>
         <div class="team-fade" aria-hidden="true"></div>
@@ -36,14 +28,48 @@
 
         <figcaption class="team-caption">
           <span class="team-kicker">Arbitr.IO / engineering unit</span>
-          <p class="team-quote">
-            Нас обʼєднує простий принцип: працювати не заради процесу, а заради результату.
-          </p>
+          <p class="team-quote"> {{ t('m057') }} </p>
         </figcaption>
       </figure>
     </div>
   </section>
 </template>
+
+<script setup>
+import { t } from '../i18n/index.js';
+
+import { ref } from 'vue';
+const zoom = ref(1);
+const pan = ref({ x: 0, y: 0 });
+let gesture = null;
+const distance = touches => Math.hypot(touches[0].clientX - touches[1].clientX, touches[0].clientY - touches[1].clientY);
+function startTouch(event) {
+  if (event.touches.length === 2) {
+    gesture = { distance: distance(event.touches), zoom: zoom.value };
+  } else if (zoom.value > 1) {
+    gesture = { x: event.touches[0].clientX, y: event.touches[0].clientY, pan: { ...pan.value } };
+  }
+}
+function moveTouch(event) {
+  if (!gesture) return;
+  if (event.touches.length === 2 && gesture.distance) {
+    event.preventDefault();
+    zoom.value = Math.min(4, Math.max(1, gesture.zoom * distance(event.touches) / gesture.distance));
+  } else if (event.touches.length === 1 && gesture.pan && zoom.value > 1) {
+    event.preventDefault();
+    pan.value = { x: gesture.pan.x + event.touches[0].clientX - gesture.x, y: gesture.pan.y + event.touches[0].clientY - gesture.y };
+  }
+  const rect = event.currentTarget.getBoundingClientRect();
+  const maxX = rect.width * (zoom.value - 1) / 2;
+  const maxY = rect.height * (zoom.value - 1) / 2;
+  pan.value = { x: Math.max(-maxX, Math.min(maxX, pan.value.x)), y: Math.max(-maxY, Math.min(maxY, pan.value.y)) };
+}
+function endTouch(event) {
+  gesture = null;
+  if (event.touches.length) startTouch(event);
+}
+function resetZoom() { zoom.value = 1; pan.value = { x: 0, y: 0 }; }
+</script>
 
 <style scoped>
 .team {
@@ -94,6 +120,9 @@
   background: var(--surface-dark);
   border: 1px solid rgba(255, 255, 255, .08);
 }
+
+.team-image-viewport { height: 100%; overflow: hidden; }
+.team-reset { position: absolute; top: 10px; right: 10px; z-index: 2; padding: 10px; border-radius: 8px; border: 1px solid var(--blue-line); background: var(--bg); color: var(--ink); cursor: pointer; }
 
 .team-photo {
   display: block;
@@ -155,5 +184,13 @@
   font-weight: 600;
   letter-spacing: -.02em;
   color: var(--ink);
+}
+@media (max-width: 720px) {
+  .team-media { height: auto; }
+  .team-image-viewport { height: auto; }
+  .team-photo { height: auto; object-fit: contain; }
+  .team-caption { position: relative; padding: 20px; }
+  .team-fade { display: none; }
+  .team-kicker { letter-spacing: .12em; }
 }
 </style>

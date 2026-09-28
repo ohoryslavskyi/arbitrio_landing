@@ -61,14 +61,14 @@ const idR = `mk-r-${uid}`;
   border: 1px solid rgba(47, 140, 255, .3);
 }
 
-:global([data-theme='light']) .tile {
+:global([data-theme='light'] .tile) {
   background: #fff;
   border-color: rgba(47, 140, 255, .35);
   box-shadow: 0 1px 2px rgba(10, 15, 22, .06);
 }
 
 /* на світлому тлі крижана нога зникає — темнішаємо обидві */
-:global([data-theme='light']) .leg-l { stroke: #0c46a8; }
-:global([data-theme='light']) .leg-r { stroke: #1560d4; }
-:global([data-theme='light']) .leg-b { stroke: #2f8cff; }
+:global([data-theme='light'] .leg-l) { stroke: #0c46a8; }
+:global([data-theme='light'] .leg-r) { stroke: #1560d4; }
+:global([data-theme='light'] .leg-b) { stroke: #2f8cff; }
 </style>

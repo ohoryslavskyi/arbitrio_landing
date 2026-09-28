@@ -4,32 +4,28 @@
       <div class="hero-col">
         <div class="badge">
           <span class="pulse-dot"></span>
-          <span class="badge-text">Автоматизований криптовалютний арбітраж</span>
+          <span class="badge-text"> {{ t('m006') }} </span>
         </div>
 
-        <h1 class="hero-title">
-          Новий подих
-          <span class="hero-title-accent">в арбітражі</span>
+        <h1 class="hero-title"> {{ t('m007') }} <span class="hero-title-accent"> {{ t('m008') }} </span>
         </h1>
 
-        <p class="hero-claim">
-          Arbitr.IO — нова та унікальна на ринку платформа для автоматизованого криптовалютного арбітражу!
-        </p>
+        <p class="hero-claim"> {{ t('m009') }} </p>
 
-        <p class="hero-lead">
-          Створена для відповідальної торгівлі та розвитку партнерської спільноти. Це не просто
-          арбітражний термінал — це інженерна система з власною ризик-моделлю, ізольованою
-          інфраструктурою та прозорими умовами співпраці.
-        </p>
+        <p class="hero-lead"> {{ t('m010') }} </p>
 
         <div class="hero-actions">
-          <a href="#cta" class="btn btn--primary">Отримати доступ</a>
-          <a href="#demo" class="btn btn--ghost">Спочатку демо-режим</a>
+          <a href="#cta" class="btn btn--primary"> {{ t('m003') }} </a>
+          <a href="#demo" class="btn btn--ghost"> {{ t('m011') }} </a>
         </div>
       </div>
     </div>
   </section>
 </template>
+
+<script setup>
+import { t } from '../i18n/index.js';
+</script>
 
 <style scoped>
 .hero { position: relative; }
@@ -45,6 +41,7 @@
 
 .badge {
   display: inline-flex;
+  max-width: 100%;
   align-items: center;
   gap: 9px;
   padding: 6px 13px 6px 10px;
@@ -53,7 +50,10 @@
   background: rgba(47, 140, 255, .05);
 }
 
+.badge .pulse-dot { flex: none; }
+
 .badge-text {
+  overflow-wrap: anywhere;
   font-family: var(--mono);
   font-size: 10px;
   letter-spacing: .22em;
@@ -108,5 +108,9 @@
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 34px;
+}
+@media (min-width: 1200px) {
+  .hero-wrap { padding-top: 28px; }
+  .badge { min-height: 28px; }
 }
 </style>

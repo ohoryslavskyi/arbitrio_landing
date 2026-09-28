@@ -1,22 +1,16 @@
 <template>
   <section id="demo" class="learning">
-    <h2 class="section-title learning-title">Навчання</h2>
+    <h2 class="section-title learning-title"> {{ t('m012') }} </h2>
 
     <div class="learning-row">
       <div class="demo-panel">
-        <span class="pill">Без реальних коштів</span>
+        <span class="pill"> {{ t('m013') }} </span>
 
-        <p class="demo-headline">🎓 Демо-режим: спершу вчимось, потім торгуємо</p>
+        <p class="demo-headline"> {{ t('m014') }} </p>
 
-        <p class="demo-text">
-          Кожен учасник починає в демо-режимі: той самий інтерфейс, ті самі ринкові дані та
-          логіка системи — але без ризику для капіталу.
-        </p>
+        <p class="demo-text"> {{ t('m015') }} </p>
 
-        <p class="demo-note">
-          Перехід до реальної торгівлі відкривається після навчання. Так учасник приходить
-          на ринок з розумінням процесу, а не з надією на випадок.
-        </p>
+        <p class="demo-note"> {{ t('m016') }} </p>
       </div>
 
       <ol class="steps">
@@ -28,8 +22,8 @@
         >
           <span class="step-n">{{ step.n }}</span>
           <div>
-            <strong class="step-title">{{ step.title }}</strong>
-            <span class="step-text">{{ step.text }}</span>
+            <strong class="step-title">{{ t(step.title) }}</strong>
+            <span class="step-text">{{ t(step.text) }}</span>
           </div>
         </li>
       </ol>
@@ -38,6 +32,8 @@
 </template>
 
 <script setup>
+import { t } from '../i18n/index.js';
+
 import { learningSteps } from '../data/content.js';
 </script>
 
@@ -121,7 +117,7 @@ import { learningSteps } from '../data/content.js';
   margin-bottom: 4px;
   font-size: 14.5px;
   font-weight: 600;
-  color: #e6ecf2;
+  color: var(--ink-2);
 }
 
 .step-text {

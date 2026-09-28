@@ -1,13 +1,13 @@
 <template>
   <footer class="footer">
     <div class="footer-inner">
-      <a href="#top" class="footer-brand" aria-label="Arbitrio — на початок сторінки">
+      <a href="#top" class="footer-brand" :aria-label="t('m049')">
         <BrandLockup />
       </a>
 
       <nav class="footer-nav">
         <a v-for="link in footerLinks" :key="link.href" :href="link.href" class="footer-link">
-          {{ link.label }}
+          {{ t(link.label) }}
         </a>
       </nav>
     </div>
@@ -15,6 +15,8 @@
 </template>
 
 <script setup>
+import { t } from '../i18n/index.js';
+
 import BrandLockup from './BrandLockup.vue';
 import { footerLinks } from '../data/content.js';
 </script>

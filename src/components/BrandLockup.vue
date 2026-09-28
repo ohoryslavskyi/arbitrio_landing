@@ -60,8 +60,8 @@ defineProps({
   color: var(--ink-muted);
 }
 
-:global([data-theme='light']) .brand-name {
+:global([data-theme='light'] .brand-name) {
   background-image: linear-gradient(96deg, #0a0f16 0px, #1560d4 104px);
 }
-:global([data-theme='light']) .brand-tag { color: #6b7787; }
+:global([data-theme='light'] .brand-tag) { color: #6b7787; }
 </style>

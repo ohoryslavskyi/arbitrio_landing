@@ -9,7 +9,7 @@
       >
         <span class="stat-num">
           <!-- «до» тісніше до числа: інакше візуально читається як подвійний пробіл -->
-          <span v-if="stat.value.startsWith('до ')" class="stat-prefix">до</span>
+          <span v-if="stat.value.startsWith('до ')" class="stat-prefix"> {{ t('m050') }} </span>
           <span v-if="stat.value.startsWith('до ')">&nbsp;{{ stat.value.slice(3) }}</span>
           <span v-else>{{ stat.value }}</span>
           <span v-if="stat.flame" class="flame" aria-hidden="true">🔥</span>
@@ -17,13 +17,15 @@
 
         <span class="stat-sheen" aria-hidden="true"></span>
 
-        <span class="stat-caption">{{ stat.caption }}</span>
+        <span class="stat-caption">{{ t(stat.caption) }}</span>
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
+import { t } from '../i18n/index.js';
+
 import { stats } from '../data/content.js';
 </script>
 

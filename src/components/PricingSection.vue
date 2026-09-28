@@ -1,64 +1,54 @@
 <template>
   <section id="pricing" class="pricing">
-    <h2 class="section-title pricing-title">Прозорі тарифи</h2>
+    <h2 class="section-title pricing-title"> {{ t('m036') }} </h2>
 
     <div class="pricing-row">
       <!-- Ліцензія — виділена картка -->
       <article class="card card--blue card--raise tariff">
-        <span class="pill">Одноразово</span>
-        <h3 class="tariff-name">Ліцензія Arbitr.IO</h3>
+        <span class="pill"> {{ t('m037') }} </span>
+        <h3 class="tariff-name"> {{ t('m038') }} </h3>
         <div class="price"><span class="price-sign price-sign--blue">$</span>150</div>
-        <p class="tariff-text">
-          Безстроковий доступ до функціоналу торгової системи відповідно до умов користування
-          платформою.
-        </p>
+        <p class="tariff-text"> {{ t('m039') }} </p>
       </article>
 
       <article class="card card--raise tariff">
-        <span class="pill pill--muted">Щомісяця</span>
-        <h3 class="tariff-name">Оренда сервера</h3>
+        <span class="pill pill--muted"> {{ t('m040') }} </span>
+        <h3 class="tariff-name"> {{ t('m041') }} </h3>
         <div class="price"><span class="price-sign">$</span>75</div>
-        <p class="tariff-text">
-          Стабільна та безперервна робота торгової системи на виділеній інфраструктурі.
-        </p>
+        <p class="tariff-text"> {{ t('m042') }} </p>
       </article>
     </div>
 
     <div class="pricing-row pricing-row--second">
       <div class="card card--raise terms">
-        <span class="terms-kicker">Розрахунки</span>
+        <span class="terms-kicker"> {{ t('m043') }} </span>
         <div class="terms-figure">
           <span class="terms-num">7</span>
-          <span class="terms-unit">календарних днів на оплату комісії</span>
+          <span class="terms-unit"> {{ t('m044') }} </span>
         </div>
-        <p class="tariff-text">
-          За один день до запланованої дати платежу партнер отримує сповіщення. Несвоєчасна
-          оплата без погодженої поважної причини призводить до автоматичного призупинення
-          доступу та деактивації сервера.
-        </p>
+        <p class="tariff-text"> {{ t('m045') }} </p>
       </div>
 
       <!-- Штрафи — єдиний теплий акцент на сторінці -->
       <div class="card card--warm card--raise penalties">
-        <h3 class="card-title">Штрафи</h3>
+        <h3 class="card-title"> {{ t('m046') }} </h3>
 
         <div class="penalties-row">
           <div v-for="item in penalties" :key="item.text" class="penalty">
             <strong class="penalty-value">{{ item.value }}</strong>
-            <span class="penalty-text">{{ item.text }}</span>
+            <span class="penalty-text">{{ t(item.text) }}</span>
           </div>
         </div>
 
-        <p class="penalties-note">
-          Порушення: сторонні боти на підключених біржових акаунтах, закриття лише однієї
-          частини арбітражної позиції, втручання, що створює ризик незбалансованої позиції.
-        </p>
+        <p class="penalties-note"> {{ t('m047') }} </p>
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
+import { t } from '../i18n/index.js';
+
 import { penalties } from '../data/content';
 </script>
 

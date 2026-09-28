@@ -5,31 +5,27 @@
 
       <div class="cta-inner">
         <div class="cta-copy">
-          <h2 class="cta-title">Готові подивитись систему зсередини?</h2>
-          <p class="cta-text">
-            Почніть з демо-режиму та навчання. Доступ до реальної торгівлі відкривається після
-            їх завершення.
-          </p>
+          <h2 class="cta-title"> {{ t('m001') }} </h2>
+          <p class="cta-text"> {{ t('m002') }} </p>
         </div>
 
         <div class="cta-actions">
-          <a href="#pricing" class="btn btn--primary btn--lg">Отримати доступ</a>
-          <a href="#demo" class="btn btn--lg cta-secondary">Демо-режим</a>
+          <a href="#pricing" class="btn btn--primary btn--lg"> {{ t('m003') }} </a>
+          <a href="#demo" class="btn btn--lg cta-secondary"> {{ t('m004') }} </a>
         </div>
       </div>
     </div>
 
     <aside class="legal">
       <span class="legal-badge">18+</span>
-      <span class="legal-text">
-        Будь-яка торгова дія повʼязана з ризиком. Участь доступна лише повнолітнім користувачам
-        після ознайомлення з договором, тарифами, ризиками та правилами платформи. Обовʼязковою
-        умовою є проходження навчання. Ми не орієнтуємося на випадкових учасників і не є
-        скам-проєктом.
-      </span>
+      <span class="legal-text"> {{ t('m005') }} </span>
     </aside>
   </section>
 </template>
+
+<script setup>
+import { t } from '../i18n/index.js';
+</script>
 
 <style scoped>
 .cta {

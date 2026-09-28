@@ -4,16 +4,11 @@
     <div class="mission-lines" aria-hidden="true"></div>
 
     <div class="wrap mission-wrap">
-      <h2 class="section-title mission-title">Наша місія</h2>
+      <h2 class="section-title mission-title"> {{ t('m017') }} </h2>
 
-      <p class="body-text mission-p">
-        Ми хочемо дати людям те, чого нам самим не вистачало на ринку.
-      </p>
+      <p class="body-text mission-p"> {{ t('m018') }} </p>
 
-      <p class="body-text mission-p mission-p--last">
-        Наш продукт створюється не лише для професійних трейдерів або технічних спеціалістів.
-        Ми будуємо систему, у якій різні люди можуть знайти для себе свою роль.
-      </p>
+      <p class="body-text mission-p mission-p--last"> {{ t('m019') }} </p>
 
       <div class="mission-grid">
         <article
@@ -22,30 +17,19 @@
           class="scenario card card--lift"
         >
           <span class="scenario-mark" aria-hidden="true">?</span>
-          <span class="eyebrow scenario-label">{{ item.label }}</span>
-          <p class="scenario-text">{{ item.text }}</p>
+          <span class="eyebrow scenario-label">{{ t(item.label) }}</span>
+          <p class="scenario-text">{{ t(item.text) }}</p>
         </article>
       </div>
 
       <div class="verdict">
-        <p class="verdict-lead">
-          Якщо хоча б на одне з цих питань ви відповіли ствердно — цей продукт вам неодмінно
-          підійде! ✅ Адже він орієнтований не на прогнозування напрямку ринку, а на пошук
-          і використання конкретних ринкових ситуацій.
-        </p>
+        <p class="verdict-lead"> {{ t('m020') }} </p>
 
-        <p class="verdict-text">
-          Якщо хоча б один із цих сценаріїв вам близький — запрошуємо спробувати наш
-          <a href="#demo" class="verdict-link">Demo Mode</a>. Ви зможете розібратися в логіці
-          роботи платформи, побачити її інструменти в дії та самостійно оцінити продукт без
-          необхідності одразу приймати будь-які рішення.
-        </p>
+        <p class="verdict-text"> {{ t('m021') }} <a href="#demo" class="verdict-link">{{ t('m004') }}</a>{{ t('m022') }} </p>
 
         <div class="verdict-foot">
-          <p class="verdict-note">
-            Ми не хочемо бути багатослівними — краще покажемо наш софт у роботі. 🚀
-          </p>
-          <a href="#cta" class="btn btn--primary verdict-cta">Отримати доступ</a>
+          <p class="verdict-note"> {{ t('m023') }} </p>
+          <a href="#cta" class="btn btn--primary verdict-cta"> {{ t('m003') }} </a>
         </div>
       </div>
     </div>
@@ -53,6 +37,8 @@
 </template>
 
 <script setup>
+import { t } from '../i18n/index.js';
+
 import { missionScenarios } from '../data/content.js';
 </script>
 
