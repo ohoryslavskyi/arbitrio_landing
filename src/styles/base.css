@@ -440,3 +440,17 @@ body { overflow-x: clip; }
 }
 @keyframes claimFlow { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
 @media (prefers-reduced-motion: reduce) { .hero .hero-claim { animation: none; } }
+
+/* Shared CTA sizing and visible mouse, keyboard and touch feedback. */
+.hero-actions, .cta-actions { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); width: min(100%, 440px); }
+.hero-actions .btn, .cta-actions .btn { display: flex; align-items: center; justify-content: center; text-align: center; min-height: 50px; padding: 13px 16px; border: 1px solid transparent; white-space: normal; }
+.hero-actions .btn--ghost, .cta-actions .cta-secondary { border-color: var(--blue-line); }
+.hero-actions .btn--ghost:is(:hover,:active,:focus-visible), .cta-actions .cta-secondary:is(:hover,:active,:focus-visible) { background: #123d71; color: #fff; border-color: #398ff0; box-shadow: 0 0 22px rgba(47,140,255,.25); }
+[data-theme='light'] .hero-actions .btn--ghost:is(:hover,:active,:focus-visible), [data-theme='light'] .cta-actions .cta-secondary:is(:hover,:active,:focus-visible) { background: #d5e6ff; color: #124594; border-color: #327ada; }
+[data-theme='light'] .reward { background: #f6f8fb; }
+[data-theme='light'] .reward--top { background: #e4e9f2; }
+[data-theme='light'] .reward:is(:hover,:active) { background: #d5e6ff; }
+[data-theme='light'] .rail-label { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; font-weight: 600; }
+[data-theme='light'] .rail-item:hover .rail-label, [data-theme='light'] .mobile-navigation a:is(:hover,:active) { color: var(--blue); background: transparent; }
+[data-theme='light'] .mobile-navigation a { font-weight: 600; }
+@media (max-width: 360px) { .hero-actions, .cta-actions { grid-template-columns: 1fr; } }

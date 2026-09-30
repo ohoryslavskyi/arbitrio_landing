@@ -1,45 +1,15 @@
 {
-  "version": "ui-v4",
-  "languages": [
-    "uk",
-    "ru",
-    "en",
-    "it"
-  ],
-  "headerChecks": [
+  "version": "tests-v8",
+  "checks": [
     {
       "engine": "chromium",
       "results": [
-        {
-          "width": 240,
-          "passed": true
-        },
-        {
-          "width": 320,
-          "passed": true
-        },
         {
           "width": 390,
           "passed": true
         },
         {
-          "width": 440,
-          "passed": true
-        },
-        {
-          "width": 844,
-          "passed": true
-        },
-        {
-          "width": 1024,
-          "passed": true
-        },
-        {
           "width": 1440,
-          "passed": true
-        },
-        {
-          "width": 1920,
           "passed": true
         }
       ],
@@ -50,35 +20,11 @@
       "engine": "firefox",
       "results": [
         {
-          "width": 240,
-          "passed": true
-        },
-        {
-          "width": 320,
-          "passed": true
-        },
-        {
           "width": 390,
           "passed": true
         },
         {
-          "width": 440,
-          "passed": true
-        },
-        {
-          "width": 844,
-          "passed": true
-        },
-        {
-          "width": 1024,
-          "passed": true
-        },
-        {
           "width": 1440,
-          "passed": true
-        },
-        {
-          "width": 1920,
           "passed": true
         }
       ],
@@ -89,35 +35,11 @@
       "engine": "webkit",
       "results": [
         {
-          "width": 240,
-          "passed": true
-        },
-        {
-          "width": 320,
-          "passed": true
-        },
-        {
           "width": 390,
           "passed": true
         },
         {
-          "width": 440,
-          "passed": true
-        },
-        {
-          "width": 844,
-          "passed": true
-        },
-        {
-          "width": 1024,
-          "passed": true
-        },
-        {
           "width": 1440,
-          "passed": true
-        },
-        {
-          "width": 1920,
           "passed": true
         }
       ],
@@ -125,70 +47,18 @@
       "themes": 2
     }
   ],
-  "baseline": "QA_BASELINE_V1.json: previous full device matrix; not rerun in full after header v2",
   "notTested": [
-    "Physical devices",
     "Actual Safari application",
-    "Telegram in-app browser",
-    "Actual branded Google Chrome and Microsoft Edge applications",
-    "OS keyboard, cutouts, hinges and browser toolbars"
+    "Physical devices",
+    "Telegram browser"
   ],
-  "themes": [
-    "light",
-    "dark"
-  ],
-  "previousV2ChromiumInteractions": {
-    "languageSwitch": true,
-    "persistence": true,
-    "translationCoverage": true,
-    "pinchAndBurgerNavigation": "passed",
-    "pageErrors": []
+  "unitTests": {
+    "passed": 23,
+    "files": 5
   },
-  "finalGridChecks": [
-    {
-      "engine": "chromium",
-      "results": [
-        {
-          "width": 440,
-          "passed": true
-        },
-        {
-          "width": 1440,
-          "passed": true
-        }
-      ],
-      "languages": 4,
-      "themes": 2
-    },
-    {
-      "engine": "firefox",
-      "results": [
-        {
-          "width": 440,
-          "passed": true
-        },
-        {
-          "width": 1440,
-          "passed": true
-        }
-      ],
-      "languages": 4,
-      "themes": 2
-    },
-    {
-      "engine": "webkit",
-      "results": [
-        {
-          "width": 440,
-          "passed": true
-        },
-        {
-          "width": 1440,
-          "passed": true
-        }
-      ],
-      "languages": 4,
-      "themes": 2
-    }
-  ]
+  "typecheck": "passed",
+  "productionBuild": "passed",
+  "browserChecksNote": "checks below were run for v6; not rerun for test and typing additions",
+  "vitest": "5.0.3",
+  "verificationPlatform": "Linux; Windows not run"
 }

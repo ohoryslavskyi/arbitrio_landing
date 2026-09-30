@@ -51,3 +51,7 @@ Remove-Item Env:BROWSER
 Каталог екранів: `tests/chrome-devtools-profiles.json`, отриманий із Chrome DevTools `EmulatedDevices.ts`: https://github.com/ChromeDevTools/devtools-frontend/blob/main/front_end/models/emulation/EmulatedDevices.ts . У ньому 46 пристроїв та 102 варіанти орієнтації/розкладеного стану. Перевіряються розмір viewport, щільність пікселів і touch/mobile-параметри; фізичні вирізи, шарніри та панелі системного браузера цим не відтворюються.
 
 Точні результати й межі перевірки наведено в `REVIEW.md`.
+
+## Перевірка наступних змін
+
+Після `npm ci`: `npm run test` — 23 юніт/компонентні тести; `npm run check` — типи; `npm run verify` — типи, тести та збірка. Деталі в TESTING.md.

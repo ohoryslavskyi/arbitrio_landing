@@ -31,6 +31,7 @@ export function usePointerGrid(options = {}) {
     initialCount = 260,
   } = options;
 
+  /** @type {import('vue').Ref<HTMLElement|null>} */
   const gridEl = ref(null);
   const cellCount = ref(initialCount);
 
@@ -97,7 +98,7 @@ export function usePointerGrid(options = {}) {
 
       node.dataset.on = '1';
       node.style.transform =
-        `scale(${(1 + 0.26 * e).toFixed(3)}) translate(${(-dx * 0.07 * e).toFixed(2)}px,${(-dy * 0.07 * e).toFixed(2)}px)`;
+        `scale(${(1 + (reduced ? 0 : 0.26) * e).toFixed(3)}) translate(${(-dx * 0.07 * e).toFixed(2)}px,${(-dy * 0.07 * e).toFixed(2)}px)`;
       node.style.background = `rgba(47,140,255,${(0.05 + 0.3 * e).toFixed(3)})`;
       node.style.boxShadow =
         `inset 0 0 0 1px rgba(143,188,255,${(0.09 + 0.42 * e).toFixed(3)}), 0 0 ${(16 * e).toFixed(1)}px rgba(47,140,255,${(0.4 * e).toFixed(3)})`;
@@ -105,6 +106,7 @@ export function usePointerGrid(options = {}) {
   };
 
   const onMove = (event) => {
+    if (event.type === 'pointerdown') measure();
     mx = event.clientX;
     my = event.clientY;
 
@@ -138,13 +140,15 @@ export function usePointerGrid(options = {}) {
 
     window.addEventListener('resize', onResize);
     window.addEventListener('scroll', onResize, { passive: true });
-    if (!reduced) window.addEventListener('mousemove', onMove, { passive: true });
+    window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('pointerdown', onMove, { passive: true });
   });
 
   onBeforeUnmount(() => {
     window.removeEventListener('resize', onResize);
     window.removeEventListener('scroll', onResize);
-    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerdown', onMove);
     if (measureRaf) cancelAnimationFrame(measureRaf);
     if (paintRaf) cancelAnimationFrame(paintRaf);
   });

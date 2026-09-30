@@ -24,7 +24,9 @@ import { ref, nextTick, onMounted, onBeforeUnmount } from 'vue';
 import { languages, locale, setLocale } from '../i18n/index.js';
 const emit = defineEmits(['opened']);
 const open = ref(false);
+/** @type {import('vue').Ref<HTMLElement|null>} */
 const root = ref(null);
+/** @type {import('vue').Ref<HTMLButtonElement|null>} */
 const trigger = ref(null);
 function close(restore = false) { open.value = false; if (restore) trigger.value?.focus(); }
 function toggle() { open.value = !open.value; if (open.value) emit('opened'); }
@@ -36,11 +38,12 @@ async function onKeydown(event) {
   if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
   event.preventDefault();
   if (!open.value) { open.value = true; emit('opened'); await nextTick(); }
-  const items = [...root.value.querySelectorAll('[role="menuitemradio"]')];
-  const index = items.indexOf(document.activeElement);
+  if (!root.value) return;
+  const items = [...root.value.querySelectorAll('button[role="menuitemradio"]')];
+  const index = items.findIndex(item => item === document.activeElement);
   const next = event.key === 'Home' ? 0 : event.key === 'End' ? items.length - 1
     : event.key === 'ArrowDown' ? (index + 1) % items.length : (index < 0 ? items.length - 1 : (index - 1 + items.length) % items.length);
-  items[next]?.focus();
+  if (items[next] instanceof HTMLElement) items[next].focus();
 }
 onMounted(() => document.addEventListener('pointerdown', outside));
 onBeforeUnmount(() => document.removeEventListener('pointerdown', outside));

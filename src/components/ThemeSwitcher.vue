@@ -7,18 +7,13 @@
   </button>
 </template>
 <script setup>
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { locale } from '../i18n/index.js';
-const light = ref(document.documentElement.dataset.theme === 'light');
+import { useTheme } from '../composables/useTheme.js';
+const { theme, toggle } = useTheme();
+const light = computed(() => theme.value === 'light');
 const labels = { uk: ['Світла тема', 'Темна тема'], ru: ['Светлая тема', 'Тёмная тема'], en: ['Light theme', 'Dark theme'], it: ['Tema chiaro', 'Tema scuro'] };
 const label = computed(() => (labels[locale.value] || labels.uk)[light.value ? 1 : 0]);
-function toggle() {
-  light.value = !light.value;
-  const theme = light.value ? 'light' : 'dark';
-  document.documentElement.dataset.theme = theme;
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', light.value ? '#edf2f8' : '#0b1220');
-  try { localStorage.setItem('arbitrio-theme', theme); } catch {}
-}
 </script>
 <style scoped>
 .theme-toggle { flex: none; display: grid; place-items: center; width: 40px; height: 44px; padding: 0; border: 1px solid var(--hairline); border-radius: 10px; background: var(--surface); color: var(--ink-2); cursor: pointer; -webkit-tap-highlight-color: transparent; }

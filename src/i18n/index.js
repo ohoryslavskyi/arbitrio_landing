@@ -15,12 +15,13 @@ const sourceKeys = new Map(Object.entries(uk).map(([key, value]) => [value, key]
 let initial = 'uk';
 try {
   const saved = localStorage.getItem('arbitrio-language');
-  if (Object.prototype.hasOwnProperty.call(messages, saved)) initial = saved;
+  if (saved && Object.prototype.hasOwnProperty.call(messages, saved)) initial = saved;
 } catch { /* Storage may be unavailable in private or embedded browsers. */ }
 export const locale = ref(initial);
 export function setLocale(value) {
   if (Object.prototype.hasOwnProperty.call(messages, value)) locale.value = value;
 }
+/** @param {string} source */
 export function t(source) {
   const key = sourceKeys.get(source) || source;
   return messages[locale.value]?.[key] ?? uk[key] ?? source;

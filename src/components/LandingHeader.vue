@@ -24,7 +24,13 @@ import ThemeSwitcher from './ThemeSwitcher.vue';
 import LanguageSwitcher from './LanguageSwitcher.vue';
 import { sections } from '../data/content.js';
 import { t } from '../i18n/index.js';
-const root = ref(null), burger = ref(null), language = ref(null), menuOpen = ref(false);
+/** @type {import('vue').Ref<HTMLElement|null>} */
+const root = ref(null);
+/** @type {import('vue').Ref<HTMLButtonElement|null>} */
+const burger = ref(null);
+/** @type {import('vue').Ref<{close: (restore?: boolean) => void}|null>} */
+const language = ref(null);
+const menuOpen = ref(false);
 function closeMenu(restore = false) { if (!menuOpen.value) return; menuOpen.value = false; if (restore) burger.value?.focus(); }
 function toggleMenu() { language.value?.close(); menuOpen.value = !menuOpen.value; }
 function navigate(id) {

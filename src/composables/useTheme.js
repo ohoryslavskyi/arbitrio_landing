@@ -1,39 +1,17 @@
-import { onMounted, ref } from 'vue';
-
+import { ref } from 'vue';
 const KEY = 'arbitrio-theme';
-
-/**
- * Темна / світла тема. Значення пишеться в data-theme на <html> і в localStorage,
- * тому вибір переживає перезавантаження.
- *
- * @returns {{ theme: import('vue').Ref<'dark'|'light'>, toggle: () => void, set: (t: 'dark'|'light') => void }}
- */
-export function useTheme() {
-  const theme = ref('dark');
-
-  const set = (next) => {
-    theme.value = next === 'light' ? 'light' : 'dark';
-    if (typeof document !== 'undefined') {
-      document.documentElement.dataset.theme = theme.value;
-    }
-    try {
-      localStorage.setItem(KEY, theme.value);
-    } catch {
-      /* приватний режим — просто не запамʼятовуємо */
-    }
-  };
-
-  const toggle = () => set(theme.value === 'dark' ? 'light' : 'dark');
-
-  onMounted(() => {
-    let saved = null;
-    try {
-      saved = localStorage.getItem(KEY);
-    } catch {
-      saved = null;
-    }
-    set(saved || 'dark');
-  });
-
-  return { theme, toggle, set };
+/** @type {import('vue').Ref<'dark'|'light'>} */
+const theme = ref('dark');
+/** @param {unknown} next */
+function set(next) {
+  theme.value = next === 'light' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = theme.value;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme.value === 'light' ? '#edf2f8' : '#0b1220');
+  try { localStorage.setItem(KEY, theme.value); } catch {}
 }
+export function initTheme() {
+  let saved = document.documentElement.dataset.theme;
+  try { saved = localStorage.getItem(KEY) || saved; } catch {}
+  set(saved);
+}
+export function useTheme() { return { theme, set, toggle: () => set(theme.value === 'light' ? 'dark' : 'light') }; }
